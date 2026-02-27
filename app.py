@@ -49,11 +49,21 @@ if submit_button:
     img = Image.new('RGB', (largura_img, 1600), color=(255, 255, 255))
     draw = ImageDraw.Draw(img)
     
+    # AJUSTE NA FUNÇÃO DE FONTE: Adicionando caminhos do Linux (Streamlit Cloud)
     def carregar_fonte(tamanho):
-        try:
-            return ImageFont.truetype("verdana.ttf", tamanho)
-        except:
-            return ImageFont.load_default()
+        fontes_tentar = [
+            "verdana.ttf", 
+            "Verdana.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", # Fonte padrão do Linux/Streamlit
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+            "Arial.ttf"
+        ]
+        for f in fontes_tentar:
+            try:
+                return ImageFont.truetype(f, tamanho)
+            except:
+                continue
+        return ImageFont.load_default()
 
     fonte_principal = carregar_fonte(76)
     fonte_tit_info = carregar_fonte(45)
@@ -66,16 +76,14 @@ if submit_button:
     
     # --- LÓGICA DE CENTRALIZAÇÃO DO TÍTULO ---
     texto_titulo = "NÓS TEMOS UM COMBINADO!"
-    # Calcula a largura do texto para centralizar
     bbox = draw.textbbox((0, 0), texto_titulo, font=fonte_principal)
     largura_texto = bbox[2] - bbox[0]
     x_centralizado = (largura_img - largura_texto) // 2
     
-    # Desenha o Título Centralizado (com efeito de negrito)
-    for off in range(3):
-        draw.text((x_centralizado + off, 90), texto_titulo, fill=(255, 255, 255), font=fonte_principal)
+    # Desenha o Título Centralizado
+    draw.text((x_centralizado, 90), texto_titulo, fill=(255, 255, 255), font=fonte_principal)
     
-    # Marca Facilizy no canto superior direito
+    # Marca Facilizy
     draw.text((750, 20), "Facilizy Technologies Corporation", fill=(200, 200, 200), font=fonte_marca)
     
     if logo:
@@ -89,14 +97,13 @@ if submit_button:
     draw.text((50, y_pos + 70), f"CLIENTE: {nome_cliente.upper()}", fill=(0, 0, 0), font=fonte_corpo)
     draw.text((50, y_pos + 120), f"CONTATO: {telefone_cliente}", fill=(0, 0, 0), font=fonte_corpo)
     
-    # Descrição
+    # Descrição (Aumentei um pouco o spacing para 15 para melhor leitura)
     draw.text((50, y_pos + 250), "PRODUTOS SELECIONADOS:", fill=(0, 131, 143), font=fonte_tit_info)
-    draw.multiline_text((50, y_pos + 310), f"{detalhes_produto}", fill=(50, 50, 50), font=fonte_corpo, spacing=10)
+    draw.multiline_text((50, y_pos + 310), f"{detalhes_produto}", fill=(50, 50, 50), font=fonte_corpo, spacing=15)
     
     # Bloco de Valor (Destaque Laranja)
     draw.rectangle([50, 1050, 1150, 1300], fill=(255, 109, 0))
     
-    # Centralizar o Valor dentro do bloco laranja também fica melhor
     texto_invest = "INVESTIMENTO TOTAL"
     bbox_inv = draw.textbbox((0, 0), texto_invest, font=fonte_corpo)
     x_inv = (largura_img - (bbox_inv[2] - bbox_inv[0])) // 2
